@@ -25,3 +25,28 @@ int main()
    return 0;
 }
 ```
+
+## Implicit type conversion
+In the following example, ```default exceptionn``` is called because implicit conversion from char ```'a'``` to ```int``` does not occurr.
+```cpp
+#include <iostream>
+using namespace std;
+ 
+int main()
+{
+    try
+    {
+       throw 'a';
+    }
+    catch (int param)
+    {
+        cout << "int exceptionn";
+    }
+    catch (...)
+    {
+        cout << "default exceptionn";
+    }
+    cout << "After Exception";
+    return 0;
+}
+```
