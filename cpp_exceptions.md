@@ -105,3 +105,29 @@ int main()
     }
   
 ```
+## Order of Constructor and Destructor call
+When an object is created inside a try block, the destructor for the object is called before the control is transferred to catch block. This is why the following code produces this output:
+```
+Constructing an object of Test
+Destructing an object of Test
+Caught 10
+```
+```cpp
+#include <iostream>
+using namespace std;
+ 
+class Test {
+public:
+   Test() { cout << "Constructing an object of Test " << endl; }
+  ~Test() { cout << "Destructing an object of Test "  << endl; }
+};
+ 
+int main() {
+  try {
+    Test t1;
+    throw 10;
+  } catch(int i) {
+    cout << "Caught " << i << endl;
+  }
+}
+```
