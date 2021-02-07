@@ -138,3 +138,45 @@ int main()
    return 0;
 }
 ```
+## Template with non-type argument
+A template can have a non-type argument (a value). But they must be constants and known at compile type like the following:
+```cpp
+#include <iostream>
+using namespace std;
+
+template < class T, int N = 50 > // default value
+T fun(T arr[], int size)
+{
+    if (size > N)
+        cout << "Not possible";
+    T max = arr[0];
+    for (int i = 1; i < size; i++)
+        if (max < arr[i])
+            max = arr[i];
+    return max;
+}
+
+int main()
+{
+    int arr[] = { 12, 3, 14 };
+    cout << fun<int>(arr, 3); // N is default
+}
+```
+Also, non-type arguments are ```const``` and shouldn't be modified. As an example, the following code compilation fails:
+```cpp
+#include <iostream>
+using namespace std;
+ 
+template <int i>
+void fun()
+{
+   i = 20; // <= Fails here, since i is const
+   cout << i;
+}
+ 
+int main()
+{
+   fun<10>();
+   return 0;
+}
+```
