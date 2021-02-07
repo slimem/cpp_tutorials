@@ -193,3 +193,51 @@ int main()
     return 0;
 }
 ```
+On the other hand, we still can use the scope resolution operator ```d.Base::fun(5)``` to call the method in the parent class:
+```cpp
+int main()  {
+    Derived d;
+    d.Base::fun(5); // <= compilation no longer fails
+    return 0;
+}
+```
+
+## Object slicing
+The following program outputs ```Base class``` and ```Base class``` because the derived class object is sliced off and all the data members inherited will be copied to the base class. This should always be avoided because it gives counter-intuitive results like the following.
+```cpp
+#include <iostream>
+#include<string>
+using namespace std;
+ 
+class Base
+{
+public:
+    virtual string print() const
+    {
+        return "This is Base class";
+    }
+};
+ 
+class Derived : public Base
+{
+public:
+    virtual string print() const
+    {
+        return "This is Derived class";
+    }
+};
+ 
+void describe(Base p)
+{
+    cout << p.print() << endl;
+}
+ 
+int main()
+{
+    Base b;
+    Derived d;
+    describe(b);
+    describe(d);
+    return 0;
+}
+```
