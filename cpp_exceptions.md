@@ -189,3 +189,28 @@ int main() {
   return 0;
 }
 ```
+## Exception list
+An exception is thrown even if the exception list is not set. But as civilized programmers, we should set an exception list.
+```cpp
+#include <iostream>
+using namespace std;
+ 
+// Ideally it should have been "int fun() throw (int)"
+int fun()
+{
+    throw 10;
+}
+ 
+int main()
+{
+    try
+    {
+        fun();
+    }
+    catch (int )
+    {
+        cout << "Caught";
+    }
+    return 0;
+}
+```
