@@ -213,7 +213,7 @@ Template metaprogramming is done at compile time. For example, the following com
 template<int N>
 struct function {
     enum { val = 2 * function<N - 1>::val };
-    static const int val = 2 * function<N - 1>::val;
+    // static const int val = 2 * function<N - 1>::val;
 };
 // specialization for N = 0
 template<>
@@ -223,9 +223,7 @@ struct function<0> {
 };
 
 int main() {
-    std::cout << function<10> << std::endl; // outputs 1024 (2^10)
+    std::cout << function<10>::val << std::endl; // outputs 1024 (2^10)
     return 0;
 }
-
-
 ```
