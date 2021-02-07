@@ -241,3 +241,43 @@ int main()
     return 0;
 }
 ```
+## Diamond Inheritance
+There are two copies of 'a' in DerivedDerived which makes the statement ```cout << a;``` ambiguous. Replacing ```class Derived2 : public Base``` by ```class Derived2 : virtual public Base``` solves the issue.
+```cpp
+#include<iostream>
+using namespace std;
+ 
+class Base
+{
+protected:
+    int a;
+public:
+    Base() {a = 0;}
+};
+ 
+class Derived1:  public Base
+{
+public:
+    int c;
+};
+ 
+ 
+class Derived2:  public Base
+{
+public:
+    int c;
+};
+ 
+class DerivedDerived: public Derived1, public Derived2
+{
+public:
+    void show()  {   cout << a;  } // <= Fails here, a is ambiguous
+};
+ 
+int main(void)
+{
+    DerivedDerived d;
+    d.show();
+    return 0;
+}
+```
