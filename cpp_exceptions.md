@@ -171,3 +171,21 @@ int main() {
   }
 }
 ```
+## Abnormal termination of uncaught exception
+When an exception is thrown and is not caught, the program terminates abnormally (Unhandled exception).
+```cpp
+#include <iostream>
+using namespace std;
+ 
+int fun() throw (int)
+{
+    throw 10;
+} // <= Program terminates here
+ 
+int main() {
+ 
+  fun();
+ 
+  return 0;
+}
+```
