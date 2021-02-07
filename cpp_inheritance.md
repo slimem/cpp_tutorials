@@ -54,3 +54,75 @@ int main()
     return 0;
 }
 ```
+## Size of multiple inheritance classes with/without virtual
+When a class inherits from multiple classes, it also creates two copies of the inherited classes and this is a waste of space:\
+The following program outputs ```80```, since ```int arr[10]``` is counted twice:
+```cpp
+#include<iostream>
+using namespace std;
+ 
+class base {
+    int arr[10];
+};
+ 
+class b1: public base { }; // 40
+ 
+class b2: public base { }; // 40
+ 
+class derived: public b1, public b2 {}; // 40 + 40
+ 
+int main(void)
+{
+  cout << sizeof(derived);
+  return 0;
+}
+```
+On the other hand, when using ```virtual```, the following program outputs ```48``` since ```int arr[10]``` is counted only once, plus 2 vtable pointers:
+```cpp
+#include<iostream>
+using namespace std;
+ 
+class base {
+  int arr[10];
+};
+ 
+class b1: virtual public base { }; // 40 + vtable = 44
+ 
+class b2: virtual public base { }; // 40 + vtable = 44
+ 
+class derived: public b1, public b2 {}; // 40 + 2 vtables = 48
+ 
+int main(void)
+{ 
+  cout << sizeof(derived);
+  return 0;
+} 
+```
+## Method lookup for inherited classes
+The print function is not present in class R. So it is looked up in the inheritance hierarchy upward and calls the first matching function. The following outputs:
+```
+Inside Q
+```
+```cpp
+#include<iostream>
+  
+using namespace std;
+class P {
+public:
+   void print()  { cout <<" Inside P"; }
+};
+  
+class Q : public P {
+public:
+   void print() { cout <<" Inside Q"; }
+};
+  
+class R: public Q { };
+  
+int main(void)
+{
+  R r; 
+  r.print();
+  return 0;
+}
+```
