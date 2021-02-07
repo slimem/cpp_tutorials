@@ -131,3 +131,43 @@ int main() {
   }
 }
 ```
+## Exception thrown inside constructor
+When an exception is thrown inside a constructor, it makes the object considered as "incomplete" (not constructed) so its destructor won't be called. Also, destructors are called in reverse order, thus giving the following output:
+```
+Constructing object number 1
+Constructing object number 2
+Constructing object number 3
+Constructing object number 4
+Destructing object number 3
+Destructing object number 2
+Destructing object number 1
+Caught 4
+```
+```cpp
+#include <iostream>
+using namespace std;
+ 
+class Test {
+  static int count;
+  int id;
+public:
+  Test() {
+    count++;
+    id = count;
+    cout << "Constructing object number " << id << endl;
+    if(id == 4)
+       throw 4;
+  }
+  ~Test() { cout << "Destructing object number " << id << endl; }
+};
+ 
+int Test::count = 0;
+ 
+int main() {
+  try {
+    Test array[5];
+  } catch(int i) {
+    cout << "Caught " << i << endl;
+  }
+}
+```
