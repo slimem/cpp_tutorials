@@ -126,3 +126,70 @@ int main(void)
   return 0;
 }
 ```
+
+## Data members of inherited classes
+The following code fails because ```x``` is defined in the child class but called from the parent.
+```cpp
+#include<iostream>
+using namespace std;
+ 
+class Base
+{
+public:
+    void show()
+    {
+        cout<<" In Base ";
+    }
+};
+ 
+class Derived: public Base
+{
+public:
+    int x;
+    void show()
+    {
+        cout<<"In Derived ";
+    }
+    Derived()
+    {
+        x = 10;
+    }
+};
+ 
+int main(void)
+{
+    Base *bp, b;
+    Derived d;
+    bp = &d;
+    bp->show();
+    cout << bp->x; // <= fails here
+    return 0;
+}
+```
+## Shadowing methods with the same name from parent class
+If a derived class writes its own method, then all functions of base class with same name become shadowed, even if signaures of base class functions are different.
+In the following, ```int fun()``` shadows ```int fun()``` and ```int fun(int i)```. This is why the compilation fails.
+```cpp
+#include<iostream>
+using namespace std;
+ 
+class Base
+{
+public:
+    int fun()  { cout << "Base::fun() called"; }
+    int fun(int i)  { cout << "Base::fun(int i) called"; }
+};
+ 
+class Derived: public Base
+{
+public:
+    int fun() {  cout << "Derived::fun() called"; }
+};
+ 
+int main()
+{
+    Derived d;
+    d.fun(5); // <= compilation fails here
+    return 0;
+}
+```
