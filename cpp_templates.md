@@ -89,7 +89,7 @@ int main()
 }
 ```
 ## Template size with static member
-Since static variables are not counted in the ```sizeof()```, the code below outputs the following:
+Since static variables are not counted in the ```sizeof()```, the code below outputs the following: ```(sizeof(int) = 4, sizeof(char) = 1)```
 ```
 2
 8
@@ -111,6 +111,30 @@ int main()  {
    A<int, int> b;
    cout << sizeof(a) << endl;
    cout << sizeof(b) << endl;
+   return 0;
+}
+```
+## Template with default value
+A template can have a default value, but it needs to be put at the rightmost side (same as functions):
+```cpp
+#include<iostream>
+#include<stdlib.h>
+using namespace std;
+ 
+template<class T, class U, class V=double>
+class A  {
+    T x;
+    U y;
+    V z;
+    static int count;
+};
+ 
+int main()
+{
+   A<int, int> a;
+   A<double, double> b;
+   cout << sizeof(a) << endl; // 16 (static members are not included)
+   cout << sizeof(b) << endl; // 24
    return 0;
 }
 ```
