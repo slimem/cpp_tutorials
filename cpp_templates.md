@@ -180,3 +180,52 @@ int main()
    return 0;
 }
 ```
+## Template specialization
+Sometimes we want a function template to behave differently with a certain type, this is why the follwing code outputs ```Called specialization: 20```:
+```cpp
+#include <iostream>
+using namespace std;
+ 
+template <class T>
+T max (T &a, T &b)
+{
+    return (a > b)? a : b;
+}
+ 
+template <>
+int max <int> (int &a, int &b)
+{
+    cout << "Called Specialization: ";
+    return (a > b)? a : b;
+}
+ 
+int main ()
+{
+    int a = 10, b = 20;
+    cout << max <int> (a, b);
+}
+```
+## Template metaprogramming
+Template metaprogramming is done at compile time. For example, the following computes 2^N. Please note that class members should be static or enums:
+```cpp
+#include <iostream>
+
+template<int N>
+struct function {
+    enum { val = 2 * function<N - 1>::val };
+    static const int val = 2 * function<N - 1>::val;
+};
+// specialization for N = 0
+template<>
+struct function<0> {
+    enum { val = 1 };
+    // static const int val = 1;
+};
+
+int main() {
+    std::cout << function<10> << std::endl; // outputs 1024 (2^10)
+    return 0;
+}
+
+
+```
