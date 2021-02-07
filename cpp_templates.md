@@ -36,3 +36,55 @@ int main()
     return 0;
 }
 ```
+The same can also happen with template classes like the following:
+```cpp
+#include <iostream>
+using namespace std;
+ 
+template <class T>
+class Test
+{
+private:
+    T val;
+public:
+    static int count;
+    Test()  {   count++;   }
+};
+ 
+template<class T>
+int Test<T>::count = 0;
+ 
+int main()
+{
+    Test<int> a;
+    Test<int> b;
+    Test<double> c;
+    cout << Test<int>::count   << endl;
+    cout << Test<double>::count << endl;
+    return 0;
+}
+```
+Which produces the following output (because each Test<T> has its own ```int count```):
+```
+2
+1
+```
+## Template with ambiguous call
+In the following code, ```T max(T x, T y)``` requires that both x and y are the same type. This is why the compilation fails at ```cout << max(3, 7.0) << std::endl;```.
+```cpp
+#include <iostream>
+using namespace std;
+ 
+template <typename T>
+T max(T x, T y)
+{
+    return (x > y)? x : y;
+}
+int main()
+{
+    cout << max(3, 7) << std::endl;
+    cout << max(3.0, 7.0) << std::endl;
+    cout << max(3, 7.0) << std::endl;
+    return 0;
+}
+```
