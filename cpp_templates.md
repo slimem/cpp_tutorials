@@ -88,3 +88,29 @@ int main()
     return 0;
 }
 ```
+## Template size with static member
+Since static variables are not counted in the ```sizeof()```, the code below outputs the following:
+```
+2
+8
+```
+```cpp
+#include<iostream>
+#include<stdlib.h>
+using namespace std;
+ 
+template<class T, class U>
+class A  {
+    T x;
+    U y;
+    static int count;
+};
+ 
+int main()  {
+   A<char, char> a;
+   A<int, int> b;
+   cout << sizeof(a) << endl;
+   cout << sizeof(b) << endl;
+   return 0;
+}
+```
