@@ -1,2 +1,2 @@
 # cpp_tutorials
-Some C++ topics
+Some C++ tutorials with examples
