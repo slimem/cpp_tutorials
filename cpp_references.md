@@ -19,3 +19,23 @@ int main()
     return 0;
 }
 ```
+
+## Dereferencing non-bound references
+Since the function ```fun()``` returns a reference to a deleted object, ```fun() = 30``` will do nothing: this is undefined behaviour.\
+The following displays ```10```:
+```cpp
+#include<iostream>
+using namespace std;
+ 
+int &fun()
+{
+    int x = 10;
+    return x;
+}
+int main()
+{
+    fun() = 30;
+    cout << fun();
+    return 0;
+}
+```
