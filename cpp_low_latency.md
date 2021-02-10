@@ -63,3 +63,41 @@ int main() {
     manager.mainLoop();
 }
 ```
+## Exception impact on performance
+Exceptions have no impact on performance if they **are not thrown**. Otherwise, the next step afer throwing an exception is logging which is quite expensive.
+## Branch reduction in the hotpath
+Avoid if statements in the hotpath, use a templated approach.\
+Consider this code:
+```cpp
+enum class Side { Buy, Sell };
+
+void runLogic (Side side) {
+    const float orderPrice = CalcPrice(side, fairValue, credit);
+    chechRiskLimits(side, orderPrice);
+    sendOrder(side, orderPrice);
+}
+
+float CalcPrice(Side side, float value, float credit) {
+    return side == Side::Buy? value - credit : value + credit; // branching at runtime
+}
+```
+The branching can be replaced by template specialization, that can be evaluated at compile time:
+```cpp
+template <>
+void runLogic<Side::Buy>() {
+    float orderPrice = CalcPrice<Side::Buy>(fairValue, credit);
+    checkRiscLimits<Side::Buy>(orderPrice);
+    sendOrder<Side::Buy>(orderPrice);
+}
+
+template<>
+void calcPrice<Side::Buy>(float value, float credit) { // Template specialization
+    return value - credit;
+}
+
+template<>
+void calcPrice<Side::Sell>(float value, float credit) { // Template Specialization
+    return value + credit;
+}
+
+```
