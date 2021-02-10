@@ -24,3 +24,42 @@ if (!errorFlags)
 else
     HandleError(errorFlags); // <- Do not inline this!
 ```
+
+## Use templates instead of virtual functions
+In a hotpath, virtual funtions are considered a little bit slow since the ```vtable``` pointer indirection can cause a cache miss.
+```cpp
+struct OrderSenderA {
+    void sendOrder() { // <- Same name as B, but a totally different class
+    ...
+    }
+};
+
+struct OrderSenderB {
+    void sendOrder() { // <- Same name as A, but a totally different class
+    ...
+    }
+};
+
+template <typename T>
+struct OrderManager : public IOrderManager {
+    void mainLoop final {
+        _orderSender.sendOrder(); // <- Will be done at compile time
+    };
+    
+    T _orderSender;
+};
+
+std::unique_ptr<IOrderManager> factory(const Config& conf) {
+    if (conf.useA())
+        return std::make_unique<OrderManager<OrderSenderA>>();
+    else if (conf.useB())
+        return std::make_unique<OrderManager<orderSenderB>>();
+    else
+        throw;
+}
+
+int main() {
+    auto manager = factory(config);
+    manager.mainLoop();
+}
+```
