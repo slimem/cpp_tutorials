@@ -103,7 +103,7 @@ int main()
     {
         cout << "Outer Catch\n";
     }
-  
+}  
 ```
 ## Order of Constructor and Destructor call
 When an object is created inside a try block, the destructor for the object is called before the control is transferred to catch block. This is why the following code produces this output:
