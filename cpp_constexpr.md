@@ -13,7 +13,7 @@ constexpr T literal_bin(const char* t) {
 
     for (std::size_t i = 0; t[i] != '\0'; ++i) {
 
-        if (size >= std::numeric_limits<T>::digits) {
+        if (size >= std::numeric_limits<T>::digits) { // returns the number of representation digits
             throw std::overflow_error("Too many bits\n");
         }
 
