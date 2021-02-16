@@ -206,6 +206,7 @@ int main ()
 }
 ```
 ## Template metaprogramming
+### Computing 2^N
 Template metaprogramming is done at compile time. For example, the following computes 2^N. Please note that class members should be static or enums:
 ```cpp
 #include <iostream>
@@ -224,6 +225,26 @@ struct function<0> {
 
 int main() {
     std::cout << function<10>::val << std::endl; // outputs 1024 (2^10)
+    return 0;
+}
+```
+### Computing factorial
+The following computes the factorial of an int and should return ```120```.
+```cpp
+#include <iostream>
+
+template<int N>
+struct factorial {
+    enum { value = N * factorial<N-1>::value };
+};
+
+template<>
+struct factorial<0> {
+    enum { value = 1 };
+};
+
+int main() {
+    std::cout << factorial<5>::value << std::endl;
     return 0;
 }
 ```
