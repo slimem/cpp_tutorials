@@ -19,8 +19,8 @@ constexpr T literal_bin(const char* t) {
 
         switch (t[i]) {
         case ',':                               break; // do nothing
-        case '0': value = value * 2; ++size;       break;
-        case '1': value = value * 2 + 1; ++size;   break;
+        case '0': value = value * 2; ++size;       break; // multiply actual value by two
+        case '1': value = value * 2 + 1; ++size;   break; // multiply by two and add one
         default: throw std::domain_error("Only '0' '1' and ',' can be used");
         }
     }
