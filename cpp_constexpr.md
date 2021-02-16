@@ -78,6 +78,8 @@ constexpr T literal_bin(const char* t) {
     return value;
 }
 ```
+### How does it work?
+The throw is only evaluated at runtime, so it is skipped at compile time. If we have a runtime implementation, it should evaluate everything!
 
 
 
