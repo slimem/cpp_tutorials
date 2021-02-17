@@ -101,3 +101,14 @@ void calcPrice<Side::Sell>(float value, float credit) { // Template Specializati
 }
 
 ```
+
+## Data lookups
+One cache line size is **64 bytes** on intel CPUs, so accessing to one member means that the whole structure will be loaded into the cache. So if you need data that seems unrelated to the structure below, you can put it: it will seem ugly, but you get it for free!
+```cpp
+struct object {
+    int32_t id;
+    char names[4];
+    int16_t multiplier;
+    int16_t var; // unrelated, but will be loaded to the cache line when accessing any member of object
+};
+```
