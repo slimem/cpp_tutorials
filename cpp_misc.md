@@ -71,3 +71,16 @@ int main()
     return 0;
 }
 ```
+
+## Default value for uninitialized global variables
+In Cpp, all the uninitialized global variables are set to ```0```. This is why the following program displays ```3```.
+```cpp
+#include<iostream>
+using namespace std;
+ 
+int x[100];
+int main()
+{
+    cout << x[99] + 3 << endl;
+}
+```
