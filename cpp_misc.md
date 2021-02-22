@@ -41,3 +41,33 @@ int main()
     return 0;
 }
 ```
+
+## Object that can only be created using the operator new
+To do this, the destructor must be declared private, this way, the object can only be constructed using a pointer, and freed using a ```friend``` or a member function to the class that calls the destructor.\
+In the following example, the **friend** method ```void destructTest(Test*)``` calls the private destructor of the class Test.
+```cpp
+// Objects of test can only be created using new
+class Test
+{
+private:
+    ~Test() {}
+friend void destructTest(Test* );
+};
+ 
+// Only this function can destruct objects of Test
+void destructTest(Test* ptr)
+{
+    delete ptr;
+}
+ 
+int main()
+{
+    // create an object
+    Test *ptr = new Test;
+ 
+    // destruct the object
+    destructTest(ptr); // <- Calls the private destructor
+ 
+    return 0;
+}
+```
