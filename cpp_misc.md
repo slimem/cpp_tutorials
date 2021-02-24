@@ -101,3 +101,22 @@ int main() {
     std::cout << (&x.var1 < &x.var2); // Compile error
 }
 ```
+## Comma operator evaluation
+In the following example, the comma operator is evaluated from left to right, so the result is ```20```.
+```cpp
+#include <iostream>
+
+int main() {
+  int a = 10;
+  int b = 20;
+  int x;
+  x = (a, b);
+  std::cout << x; // 20
+}
+```
+According to [expr.comma](https://timsong-cpp.github.io/cppwp/n4659/expr.comma#1) in the C++ standard: "A pair of expressions separated by a comma is evaluated left-to-right; the left expression is a discarded-value expression (...) The type and value of the result are the type and value of the right operand".
+The same example can be applied to the following:
+```cpp
+f(a, (t=3, t+2), c);
+```
+where the second argument of ```f```  has the value 5.
