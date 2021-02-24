@@ -84,3 +84,20 @@ int main()
     cout << x[99] + 3 << endl;
 }
 ```
+
+## Operator& on bit-fields
+The following program fails because ```operator&``` cannot be applied to bit-fields ([class.bit](https://timsong-cpp.github.io/cppwp/n4659/class.bit#3)) in the C++ standard:
+* The address-of operator & shall not be applied to a bit-field, so there are no pointers to bit-fields.
+```cpp
+#include <iostream>
+
+struct X {
+    int var1 : 3;
+    int var2;
+};
+
+int main() {
+    X x;
+    std::cout << (&x.var1 < &x.var2); // Compile error
+}
+```
