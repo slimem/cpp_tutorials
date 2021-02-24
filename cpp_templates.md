@@ -233,6 +233,37 @@ BUT since ```T``` was not specified, it is deducted from the first argument ```T
 
 However, when sum calls itself, it explicitly specifies T (it does ```sum<T>(args...)```). So ```T``` is only deduced on the initial call to sum, and this ```T``` is used for all the subsequent recursive calls, no matter the type of the arguments along the way, this is why n1 is considered ```(0.5 + (1 + (0.5 + (1)))) == 3``` and n2 is ```(0 + (1 + (0 + (1)))) == 2```.
 
+## Template class definition lookup
+Lets consider the following example:
+```cpp
+#include <iostream>
+
+void f() {
+    std::cout << "1";
+}
+
+template<typename T>
+struct B {
+    void f() {
+        std::cout << "2";
+    }
+};
+
+template<typename T>
+struct D : B<T> {
+    void g() {
+        f();
+    }
+};
+
+int main()
+{
+    D<int> d;
+    d.g();
+}
+```
+The following program displays ```1``` because according to the standard, [temp.dep](https://timsong-cpp.github.io/cppwp/n4659/temp.dep#3), "in the definition of a class or class template, if a base class depends on a template-parameter, the base class scope is not examined during unqualified name lookup either at the point of definition of the class template or member or during an instantiation of the class template or member". So when the compiler sees a call to a function f() inside g() it should choose the one from the global scope, and the program should output ```1```.
+
 ## Template metaprogramming
 ### Computing 2^N
 Template metaprogramming is done at compile time. For example, the following computes 2^N. Please note that class members should be static or enums:
