@@ -205,6 +205,34 @@ int main ()
     cout << max <int> (a, b);
 }
 ```
+
+## Template recursion type deduction
+Lets consider the following example:
+```cpp
+#include <iostream>
+
+template<typename T>
+T sum(T arg) { // case 1
+    return arg;   
+}
+
+template<typename T, typename ...Args>
+T sum(T arg, Args... args) {    // case 2
+    return arg + sum<T>(args...);
+}
+
+int main() {
+    auto n1 = sum(0.5, 1, 0.5, 1); // displays 3
+    auto n2 = sum(1, 0.5, 1, 0.5); // displays 2
+    std::cout << n1 << n2;
+}
+```
+In the example above, when calling sum, the function template calls itself **recursively** until it hits the base case ```T sum(T arg)```, so we can say that
+```sum(a,b,c,d)``` is implemented as ```sum(a) + sum(b,c,d)``` and so on and so forth.\
+BUT since ```T``` was not specified, it is deducted from the first argument ```T``` which is **double** in ```auto n1 = sum(0.5, 1, 0.5, 1);``` and **int** in ```auto n2 = sum(1, 0.5, 1, 0.5);```.\
+
+However, when sum calls itself, it explicitly specifies T (it does ```sum<T>(args...)```). So ```T``` is only deduced on the initial call to sum, and this ```T``` is used for all the subsequent recursive calls, no matter the type of the arguments along the way, this is why n1 is considered ```(0.5 + (1 + (0.5 + (1)))) == 3``` and n2 is ```(0 + (1 + (0 + (1)))) == 2```.
+
 ## Template metaprogramming
 ### Computing 2^N
 Template metaprogramming is done at compile time. For example, the following computes 2^N. Please note that class members should be static or enums:
