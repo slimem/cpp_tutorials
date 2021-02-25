@@ -61,4 +61,4 @@ int main() {
 }
 ```
 The first line displays ```ABCD``` because constructors are called from the base class then left to right ([class.base.init](https://timsong-cpp.github.io/cppwp/n4659/class.base.init#13) in the C++ standard).\
-But at the second line, someone would expect that it would display ***abcd*** but it's ```ABCd```, because when a copy constructor is user defined, calling the copy constructors of its base classes must be done explicitly (as defined in the C++ standard[class.copy.ctor](https://timsong-cpp.github.io/cppwp/n4659/class.copy.ctor#14)).
+But at the second line, someone would expect that it would display ***abcd*** but it's ```ABCd```, because when a copy constructor is user defined, calling the copy constructors of its base classes must be done explicitly ([class.copy.ctor](https://timsong-cpp.github.io/cppwp/n4659/class.copy.ctor#14) in the C++ standard).
