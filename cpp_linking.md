@@ -2,6 +2,7 @@
 
 ## Defining variables with C language linkage
 ### Definition
+---
 Let's consider the following example:
 ```cpp
 #include <iostream>
@@ -41,6 +42,7 @@ extern "C" {
 (...)
  ```
  ### Declaration
+ ---
  In the following example, A::x and B::x refer to the same variable so the output is ```01```.
  ```cpp
  #include<iostream>
