@@ -1,16 +1,17 @@
 # CPP static and dynamic linking
 
 ## Defining variables with C language linkage
+### Definition
 Let's consider the following example:
 ```cpp
 #include <iostream>
 
 namespace A {
-  extern "C" { int x; }
+  extern "C" { int x; } // Definition!!!
 };
 
 namespace B {
-  extern "C" { int x; }
+  extern "C" { int x; } // Definition!!! (defined for the second time)
 };
 
 int A::x = 0;
@@ -39,7 +40,29 @@ extern "C" {
 }
 (...)
  ```
+ ### Declaration
+ In the following example, A::x and B::x refer to the same variable so the output is ```01```.
+ ```cpp
+ #include<iostream>
+
+namespace A{
+  extern "C" int x;
+};
+
+namespace B{
+  extern "C" int x;
+};
+
+int A::x = 0;
+
+int main(){
+  std::cout << B::x; // same variable
+  A::x=1; // same variable
+  std::cout << B::x;
+}
+ ```
  
- 
- 
- 
+ Due to the extern "C" specifications, A::x and B::x actually refer to the same variable.
+
+[dcl.link](https://timsong-cpp.github.io/cppwp/n4659/dcl.link#6) in the C++ standard:
+"Two declarations for a variable with C language linkage with the same name (ignoring the namespace names that qualify it) that appear in different namespace scopes refer to the same variable."
