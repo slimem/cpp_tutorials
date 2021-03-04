@@ -62,3 +62,44 @@ int main() {
 ```
 The first line displays ```ABCD``` because constructors are called from the base class then left to right ([class.base.init](https://timsong-cpp.github.io/cppwp/n4659/class.base.init#13) in the C++ standard).\
 But at the second line, someone would expect that it would display ***abcd*** but it's ```ABCd```, because when a copy constructor is user defined, calling the copy constructors of its base classes must be done explicitly ([class.copy.ctor](https://timsong-cpp.github.io/cppwp/n4659/class.copy.ctor#14) in the C++ standard).
+
+## Initializer list
+The following program outputs ```1133```:
+```cpp
+#include <initializer_list>
+#include <iostream>
+
+struct A {
+  A() { std::cout << "1"; }
+
+  A(int) { std::cout << "2"; }
+
+  A(std::initializer_list<int>) { std::cout << "3"; }
+};
+
+int main(int argc, char *argv[]) {
+  A a1;
+  A a2{};
+  A a3{ 1 };
+  A a4{ 1, 2 };
+}
+```
+A1 is default initialized, as describted in [dcl.init](https://timsong-cpp.github.io/cppwp/n4659/dcl.init#12)
+
+A2 does not use the ```initializer_list``` constructor with a list of zero elemets, but the default constructor in the C++ standard [dcl.init.list](https://timsong-cpp.github.io/cppwp/n4659/dcl.init.list#3):
+
+```cpp
+struct S {
+  S(std::initializer_list<double>); // #1
+  S(std::initializer_list<int>);    // #2
+  S();                              // #3
+  // ...
+};
+S s1 = { 1.0, 2.0, 3.0 };           // invoke #1
+S s2 = { 1, 2, 3 };                 // invoke #2
+S s3 = { };                         // invoke #3
+```
+
+in A3 and A4, the ```initializer_list``` constructor is chosed with the overload resolution, as described in [over.match.list](https://timsong-cpp.github.io/cppwp/n4659/over.match.list)
+This means that when a constructor with one element is provided, the standard prioritizes ```intializer_list<int>``` first, then ```A(int)```.
+
