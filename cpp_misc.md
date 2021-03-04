@@ -120,3 +120,20 @@ The same example can be applied to the following:
 f(a, (t=3, t+2), c);
 ```
 where the second argument of ```f```  has the value 5.
+
+## Continue statement in a loop
+Lets consider the following program:
+```cpp
+#include <iostream>
+
+int main() {
+    int i=1;
+    do {
+        std::cout << i;
+        i++;
+        if(i < 3) continue;
+    } while(false);
+    return 0;
+}
+```
+The program outputs ```1``` because the **continue** statements causes the control to pass to **the end of the loop**, not the beginning. (C++ standard [stmt.cont](https://timsong-cpp.github.io/cppwp/n4659/stmt.cont#1))
