@@ -281,3 +281,27 @@ int main(void)
     return 0;
 }
 ```
+
+## Virtual access of private members
+Lets consider the following:
+```cpp
+#include <iostream>
+
+class A {
+public:
+  virtual void f() { std::cout << "A"; }
+};
+
+class B : public A {
+private:
+  void f() { std::cout << "B"; }
+};
+
+void g(A &a) { a.f(); }
+
+int main() {
+  B b;
+  g(b);
+}
+```
+Here, ```B::f()``` is called even though it is private, because access is checked at the call point which is ```A::f()``` (C++ standard [class.access.virt](https://timsong-cpp.github.io/cppwp/n4659/class.access.virt#2))
