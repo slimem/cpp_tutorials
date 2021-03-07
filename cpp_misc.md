@@ -137,3 +137,34 @@ int main() {
 }
 ```
 The program outputs ```1``` because the **continue** statements causes the control to pass to **the end of the loop**, not the beginning. (C++ standard [stmt.cont](https://timsong-cpp.github.io/cppwp/n4659/stmt.cont#1))
+
+## Ambiguity resolution of type conversion and declaration
+Lets consider the following example:
+```cpp
+#include <iostream>
+
+struct X {
+    X() { std::cout << "1"; }
+    X(const X &) { std::cout << "3"; }
+    ~X() { std::cout << "2"; }
+
+    void f() { std::cout << "4"; }
+
+} object; // <- A
+
+int main() {
+    X(object); // <- B
+    object.f();
+}
+```
+The program outputs ```11422``` because at the line ```X(object)```, someone can easily interpret as:
+* Creating a temprary unnamed variable ```object``` OR
+* Creating a new variable of type ```X``` named ```object```.
+Regarding this subject, the C++ standard says that an expression-statement with a function-style explicit type conversion is considered a declaration ([stmt.ambig](https://timsong-cpp.github.io/cppwp/n4659/stmt.ambig#1))
+
+This way we can explain the output ```11422``` with the following:
+* An instance ```object``` of ```X``` is created (A) --> 1
+* At ```X(object)``` (B), another instance named ```object``` is created which shadows the previously created ```object``` --> 1
+* A normal call to ```f()``` --> 4
+* Destruction of the recently-created ```object``` at (B) --> 2
+* Destruction of the global ```object``` at (A) --> 2
