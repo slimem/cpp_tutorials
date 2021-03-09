@@ -307,3 +307,28 @@ int main() {
     return 0;
 }
 ```
+
+## Template Matching with specialization
+Let's consider the following example:
+```cpp
+#include <iostream>
+
+template<class T>
+void f(T) { std::cout << 1; }
+
+template<>
+void f<>(int*) { std::cout << 2; }
+
+template<class T>
+void f(T*) { std::cout << 3; }
+
+int main() {
+    int *p = nullptr; 
+    f( p );
+}
+```
+This program displays ```3``` because ```f()``` is overloaded by two function templates ```void f(T)``` and ```void f(T*)```. Note that overload resolution only considers the function templates, not the explicit specialisation ```void f<>(int*)```! For overload resolution, first we deduce the template arguments for each function template, and get ```T = int *``` for the first one, and ```T = int``` for the second.
+
+Both function templates are viable, but which one is best? According to [over.match.best](https://timsong-cpp.github.io/cppwp/n4659/over.match.best#1), a function template is a better match than another function template if it's more specialised. So ```T = int *``` is more specialized.
+
+But since the specialization ```void f<>(int*)``` comes after ```void f(T)``` and according to [temp.expl.spec](https://timsong-cpp.github.io/cppwp/n4659/temp.expl.spec#3),  the overloaded function selects ```void f(T*)``` and displays ```3```.
