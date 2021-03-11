@@ -1,7 +1,7 @@
 # CPP References
 
 ## LValue function return
-If a function returns bu reference, it can be used as an lvalue, this is why the following is true and displays ```30```:\
+If a function returns no reference, it can be used as an lvalue, this is why the following is true and displays ```30```:\
 Please note that a static variable can also be initialized and returned by reference in the same function:
 ```cpp
 #include<iostream>
@@ -74,3 +74,23 @@ In this example, all three functions are called once with an lvalue and once wit
 Note [1]: [dcl.ref](https://timsong-cpp.github.io/cppwp/n4659/dcl.ref#6) in the standard: "If a typedef-name (§10.1.3, §17.1) or a decltype-specifier (§10.1.7.2) denotes a type TR that is a reference to a type T, an attempt to create the type “lvalue reference to cv TR” creates the type “lvalue reference to T”, while an attempt to create the type “rvalue reference to cv TR” creates the type TR." The example at the end of that paragraph is worth a look.
 
 Note from the contributor: This demonstrates Scott Meyers's advice to use std::forward for forwarding references, and std::move for rvalue references.
+
+## Reference to teneray expression with different types
+Let's consider the following example:
+```cpp
+#include <iostream>
+
+int main() {
+    int i = 1;
+    int const& a = i > 0 ? i : 1;
+    i = 2;
+    std::cout << i << a;
+}
+```
+This program outputs ```21```.\
+The question is, ```a``` is a reference to ```i``` or not. but this highly depends on the return types of the conditional expression for ```i``` and ```1```:
+If both are **lvalue**, the result would be an **lvalue**. but here ```1``` is a **prvalue**.\
+The standard says after ruling a bunch of options in [expr.cond](https://timsong-cpp.github.io/cppwp/n4659/expr.cond) (if none of them are ```void```, none of them are **class type**, they dont have the same value category, they both aren't **gvalue**, the C++ standard in [expr.cond](https://timsong-cpp.github.io/cppwp/n4659/expr.cond#6) says:\
+"Otherwise, the result is a prvalue"
+
+So the result of the teneray expression is a **prvalue** (a temporary). In other words, the reference ```a``` is bound to that temporary and does not end up modifying ```a```, this is why the program returns ```21```.
