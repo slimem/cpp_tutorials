@@ -103,3 +103,37 @@ S s3 = { };                         // invoke #3
 in A3 and A4, the ```initializer_list``` constructor is chosed with the overload resolution, as described in [over.match.list](https://timsong-cpp.github.io/cppwp/n4659/over.match.list)
 This means that when a constructor with one element is provided, the standard prioritizes ```intializer_list<int>``` first, then ```A(int)```.
 
+## Initialization of an aggregate class
+Let's consider the following example:
+```cpp
+#include <iostream>
+
+struct S {
+    int one;
+    int two;
+    int three;
+};
+
+int main() {
+    S s{1,2};
+    std::cout << s.one;
+}
+```
+The program is expected to display ```1``` because we are allowed to specify fewer initializers than a struct/class has members, as long as it is an **aggregate**. We will go into details about aggregates later. But let's focus on the initializer clause.\
+In C++ standard [[dcl.init.aggr](https://timsong-cpp.github.io/cppwp/n4659/dcl.init.aggr#8)], initialization for aggregate states the following:
+>If there are fewer initializer-clauses in the list than there are elements in a non-union aggregate, then each element not explicitly initialized is initialized as follows:
+>* If the element has a default member initializer (12.2), the element is initialized from that initializer.
+>* Otherwise, if the element is not a reference, the element is copy-initialized from an empty initializer list (11.6.4).
+>* Otherwise, the program is ill-formed.
+
+In our case, the second bullet point applies then the program is well-formed. Maybe it is better if the compiler shows a warning about this, for instance, *gcc* and *clang* require **-Wextra** to warn about this.
+
+### What really is a non union aggregate?
+Let's start with the most important part: what's an aggregate? The C++ standard says in [[adc.init.aggr](https://timsong-cpp.github.io/cppwp/n4659/dcl.init.aggr#1)] that an aggregate is basically any array or class with nothing "special" going in, such constructor, inheritance etc:
+>An aggregate is an array or a class with
+>* no user-provided, explicit, or inherited constructors,
+>* no private or protected non-static data members,
+>* no virtual functions, and
+>* no virtual, private, or protected base classes
+
+Since ```struct S``` is none of the above and not an **union**, it is an **aggregate**.
