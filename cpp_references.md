@@ -75,7 +75,7 @@ Note [1]: [dcl.ref](https://timsong-cpp.github.io/cppwp/n4659/dcl.ref#6) in the 
 
 Note from the contributor: This demonstrates Scott Meyers's advice to use std::forward for forwarding references, and std::move for rvalue references.
 
-## Reference to teneray expression with different types
+## Reference to tenary expression with different types
 Let's consider the following example:
 ```cpp
 #include <iostream>
