@@ -168,3 +168,16 @@ This way we can explain the output ```11422``` with the following:
 * A normal call to ```f()``` --> 4
 * Destruction of the recently-created ```object``` at (B) --> 2
 * Destruction of the global ```object``` at (A) --> 2
+
+## Unsequenced access to volatile variable
+Lets consider the following example:
+```cpp
+#include <iostream>
+
+volatile int a;
+
+int main() {
+  std::cout << (a + a);
+}
+```
+The program results in an **undefined behaviour**, because the issue here is not the missing initializer of the variable ```a```: it will implicitly be initialized to ```0``` here. But the issue is the access to a twice without sequencing between the accesses. According to the C++ standard in [[intro.execution](https://timsong-cpp.github.io/cppwp/n4659/intro.execution#14)], access of volatile glvalues are side-effects and according to [[intro.execution](https://timsong-cpp.github.io/cppwp/n4659/intro.execution#17)], these two unsequenced side-effects on the same memory location results in **undefined behaviour**.
