@@ -181,3 +181,22 @@ int main() {
 }
 ```
 The program results in an **undefined behaviour**, because the issue here is not the missing initializer of the variable ```a```: it will implicitly be initialized to ```0``` here. But the issue is the access to a twice without sequencing between the accesses. According to the C++ standard in [[intro.execution](https://timsong-cpp.github.io/cppwp/n4659/intro.execution#14)], access of volatile glvalues are side-effects and according to [[intro.execution](https://timsong-cpp.github.io/cppwp/n4659/intro.execution#17)], these two unsequenced side-effects on the same memory location results in **undefined behaviour**.
+
+## Parsing a+++++b token
+Let's consider the following example:
+```cpp
+#include <iostream>
+
+int main() {
+ int a = 5,b = 2;
+ std::cout << a+++++b;
+}
+```
+The program has a **compilation error**. Some might expect the lexer (including me) to parse the serie of characters ```a+++++b``` as follows: ```a++ + ++b```,
+but according to the [maximal munch principle](https://en.wikipedia.org/wiki/Maximal_munch), the lexer will take the longest sequence of characters to produce the next token(with a few exceptions).
+
+The C++ standard says in [[lex.pptoken](https://timsong-cpp.github.io/cppwp/n4659/lex.pptoken#3)]:
+> - Otherwise, the next preprocessing token is the longest sequence of characters that could constitute a preprocessing token, even if that would cause further lexical analysis to fail (...).
+
+So, after parsing ```a++```, it will parse ```++``` not just ```+```. The sequence is thus parsed as: ```a ++ ++ + b``` which is ill-formed since post-increment requires a modifiable lvalue but the first post-increment will produce a prvalue, as per the C++ standard in [[expr.post.incr](https://timsong-cpp.github.io/cppwp/n4659/expr.post.incr#1)]:
+> - The value of a postfix ++ expression is the value of its operand. (...) The result is a prvalue.
