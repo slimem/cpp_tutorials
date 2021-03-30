@@ -137,3 +137,16 @@ Let's start with the most important part: what's an aggregate? The C++ standard 
 >* no virtual, private, or protected base classes
 
 Since ```struct S``` is none of the above and not an **union**, it is an **aggregate**.
+
+## Function prototype OR variable definition
+Lets consider the following example:
+```cpp
+#include <iostream>
+struct X {
+  X() { std::cout << "X"; }
+};
+
+int main() { X x(); }
+```
+Some might expect that the program will output ```X``` but IT OUTPUTS NOTHING!
+```X x();``` is a function prototype, not a variable definition. Remove the parentheses (or since C++11, replace them with {}), and the program will output ```X```.
