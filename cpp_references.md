@@ -94,3 +94,21 @@ The standard says after ruling a bunch of options in [expr.cond](https://timsong
 "Otherwise, the result is a prvalue"
 
 So the result of the teneray expression is a **prvalue** (a temporary). In other words, the reference ```a``` is bound to that temporary and does not end up modifying ```a```, this is why the program returns ```21```.
+
+## Pointer is lvalue or lvalue?
+Let's consider the following example:
+```cpp
+#include <iostream>
+
+void f(char*&&) { std::cout << 1; }
+void f(char*&) { std::cout << 2; }
+
+int main() {
+   char c = 'a';
+   f(&c);
+}
+```
+The program prints ```1``` because ```c``` is an **lvalue char**. **&c** returns a pointer to the **lvalue c**, but that pointer itself is an **rvalue**, since it's just a nameless temporary returned from ``operator&``.
+
+The first overload of ```f``` takes an **rvalue reference to ```char*```**, the second takes an **lvalue reference to ```char*```**. Since the pointer is an **rvalue**, the **first overload is selected, and 1 is printed**.
+
