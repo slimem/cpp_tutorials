@@ -150,3 +150,31 @@ int main() { X x(); }
 ```
 Some might expect that the program will output ```X``` but IT OUTPUTS NOTHING!
 ```X x();``` is a function prototype, not a variable definition. Remove the parentheses (or since C++11, replace them with {}), and the program will output ```X```.
+
+## Initialization order of member variables
+Let's consider the following example:
+```cpp
+#include <iostream>
+
+struct A {
+  A() { std::cout << "A"; }
+};
+struct B {
+  B() { std::cout << "B"; }
+};
+
+class C {
+public:
+  C() : a(), b() {}
+
+private:
+  B b;
+  A a;
+};
+
+int main()
+{
+    C();
+}
+```
+This program actually outputs ```BA``` because the initialization order of member variables is determined by their order of declaration, not their order in the initialization list.
