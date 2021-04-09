@@ -38,3 +38,27 @@ An array of n const char converts to a **pointer to const char**. A note in [[co
 NOTE: While most compilers still allow ```char const[]``` to ```char*``` conversion with just a warning, this is **not a legal conversion since C++11**.
 
 Check the following [link](https://dev.krzaq.cc/post/stop-assigning-string-literals-to-char-star-already/) for more details.
+
+## Ambiguous call
+Let's consider the following example:
+```cpp
+#include <iostream>
+
+void print(char const *str) { std::cout << str; }
+void print(short num) { std::cout << num; }
+
+int main() {
+  print("abc");
+  print(0);
+  print('A');
+}
+```
+The compilation fails because of an ambiguous call at ```print(0)```.
+The statement ```print(0);``` is ambiguous due to overload resolution rules. Both print functions are viable, but for the compiler to pick one, one of them has to have a better conversion sequence than the other. [[over.match.best](https://timsong-cpp.github.io/cppwp/n4659/over.match.best#2)]: "If there is exactly one viable function that is a better function than all other viable functions, then it is the one selected by overload resolution; otherwise the call is ill-formed".
+
+(a) Because 0 is a null pointer constant[1], it can be converted implicitly into any pointer type with a single conversion.
+
+(b) Because 0 is of type int, it can be converted implicitly to a short with a single conversion too.
+In our case, both are standard conversion sequences with a single conversion of "conversion rank". Since no function is better than the other, the call is ill-formed.
+
+\[1\] [[conv.ptr](https://timsong-cpp.github.io/cppwp/n4659/conv.ptr#1)] A null pointer constant is an integer literal (§ 5.13.2) with value zero or a prvalue of type ```std::nullptr_t```. A null pointer constant can be converted to a pointer type.
