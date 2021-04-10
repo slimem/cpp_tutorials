@@ -151,7 +151,7 @@ int main() { X x(); }
 Some might expect that the program will output ```X``` but IT OUTPUTS NOTHING!
 ```X x();``` is a function prototype, not a variable definition. Remove the parentheses (or since C++11, replace them with {}), and the program will output ```X```.
 
-## Initialization order of member variables
+## Initialization order of member variables 1
 Let's consider the following example:
 ```cpp
 #include <iostream>
@@ -178,3 +178,25 @@ int main()
 }
 ```
 This program actually outputs ```BA``` because the initialization order of member variables is determined by their order of declaration, not their order in the initialization list.
+
+## Initialization order of member variables 2
+Let's consider the following example:
+```cpp
+#include <iostream>
+
+class A {
+public:
+  A() { std::cout << 'a'; }
+  ~A() { std::cout << 'A'; }
+};
+
+class B {
+public:
+  B() { std::cout << 'b'; }
+  ~B() { std::cout << 'B'; }
+  A a;
+};
+
+int main() { B b; }
+```
+The following program outputs ```abBA``` because member variables are initialized before the constructor is called. The destructor is called before member variables are destroyed.
