@@ -28,3 +28,21 @@ Next, evaluation order and short-circuiting:
 So we first evaluate ```++I```, which is ```2```. This evaluates to true, so the second operand ```(++J && ++K)``` is never evaluated, and J and K do not get incremented.
 
 The result of the entire expression is **true**, and 1 is printed. We then print I, J and K which now hold 2,1 and 1, respectively.
+
+## Precedence of comma operator
+Let's consider the following example:
+```cpp
+#include <iostream>
+
+int main() {
+  int a = 10;
+  int b = 20;
+  int x;
+  x = a, b;
+  std::cout << x;
+}
+```
+The program outputs **a's value** which is ```10``` because the comma operator **has the lowest precedence of all C++ operators** (specifically lower than =).
+In this example it separates the two expressions x = a and b.
+
+First x = a is evaluated, setting x to 10, then b is evaluated, which does nothing.
