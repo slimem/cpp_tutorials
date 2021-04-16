@@ -87,3 +87,34 @@ The C++ standard also says in [[dcl.init](https://timsong-cpp.github.io/cppwp/n4
 > - if T is a scalar type (6.9), the object is initialized to the value obtained by converting the integer literal 0 (zero) to T;
 
 So ```a``` gets initialized to ```0```.
+
+## Static and member function with same name lookup
+Let's consider the following example:
+```cpp
+#include<iostream>
+
+int foo()
+{
+  return 10;
+}
+
+struct foobar
+{
+  static int x;
+  static int foo()
+  {
+    return 11;
+  }
+};
+
+int foobar::x = foo();
+
+int main()
+{
+    std::cout << foobar::x;
+}
+```
+The program outputs ```11``` because the C++ standard says in [[basi.lookup.unqual](https://timsong-cpp.github.io/cppwp/n4659/basic.lookup.unqual#13)]:
+>A name used in the definition of a static data member of class X (...) is looked up as if the name was used in a member function of X.
+
+Even though the call ```foo()``` occurs outside the class, since foo is used in the definition of the static data member ```foobar::x```, it is looked up as if foo() was called in a member function of foobar. If foo() was called in a member function of foobar, foobar::foo() would be called, not the global foo().
