@@ -62,3 +62,28 @@ The statement ```print(0);``` is ambiguous due to overload resolution rules. Bot
 In our case, both are standard conversion sequences with a single conversion of "conversion rank". Since no function is better than the other, the call is ill-formed.
 
 \[1\] [[conv.ptr](https://timsong-cpp.github.io/cppwp/n4659/conv.ptr#1)] A null pointer constant is an integer literal (§ 5.13.2) with value zero or a prvalue of type ```std::nullptr_t```. A null pointer constant can be converted to a pointer type.
+
+## Sizeof and unary expressions
+Let's consider the following example:
+```cpp
+#include <iostream>
+
+int main() {
+   int n = sizeof(0)["abcdefghij"]; 
+   std::cout << n;   
+}
+```
+The program outputs ```1``` because the C++ standard details the grammar for ```sizeof``` in [[expr.unary](https://timsong-cpp.github.io/cppwp/n4659/expr.unary#1)]:
+>unary-expression:
+> - ...
+> - sizeof unary-expression
+> - sizeof ( type-id )
+> - sizeof ... ( identifier )
+> - ...
+
+We have three cases and the one that applies here is sizeof unary-expression. The unary expression is ```(0)["abcdefghij"]```, which looks odd but is just array indexing of string literal which is a **const char array**.
+We can see that ```(0)["abcdefghij"]``` is identical to ```("abcdefghij")[0]``` from [[expr.sub](https://timsong-cpp.github.io/cppwp/n4659/expr.sub#1)] which says:
+>... The expression E1[E2] is identical (by definition) to \*((E1)+(E2)) ...
+
+So we end up with 0th element of "abcdefghij", which is a, which is a ```char```. And the result of sizeof('a') will be ```1``` since [[expr.sizeof](https://timsong-cpp.github.io/cppwp/n4659/expr.sizeof#1)] says:
+>... sizeof(char), sizeof(signed char) and sizeof(unsigned char) are 1 ...
