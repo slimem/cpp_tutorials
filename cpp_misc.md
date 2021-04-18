@@ -200,3 +200,23 @@ The C++ standard says in [[lex.pptoken](https://timsong-cpp.github.io/cppwp/n465
 
 So, after parsing ```a++```, it will parse ```++``` not just ```+```. The sequence is thus parsed as: ```a ++ ++ + b``` which is ill-formed since post-increment requires a modifiable lvalue but the first post-increment will produce a prvalue, as per the C++ standard in [[expr.post.incr](https://timsong-cpp.github.io/cppwp/n4659/expr.post.incr#1)]:
 > - The value of a postfix ++ expression is the value of its operand. (...) The result is a prvalue.
+
+## Integer overflow
+Let's consider the following example:
+```cpp
+#include <iostream>
+#include <limits>
+
+int main() {
+  int i = std::numeric_limits<int>::max();
+  std::cout << ++i;
+}
+```
+The program has **undefined behaviour**: Signed integer overflow is undefined behaviour according to the standard [[expr](https://timsong-cpp.github.io/cppwp/n4659/expr#4)]:
+>"If during the evaluation of an expression, the result is not mathematically defined or not in the range of representable values for its type, the behavior is undefined."
+
+Most implementations will just wrap around, so if you try it out on your machine, you will probably see the same as if you had done:
+```cpp
+std::cout << std::numeric_limits<int>::min();
+```
+Relying on such undefined behaviour is however not safe. For an interesting example, see this [link](http://stackoverflow.com/questions/7682477/why-does-integer-overflow-on-x86-with-gcc-cause-an-infinite-loop).
