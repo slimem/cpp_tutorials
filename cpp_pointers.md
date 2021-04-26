@@ -87,3 +87,41 @@ We can see that ```(0)["abcdefghij"]``` is identical to ```("abcdefghij")[0]``` 
 
 So we end up with 0th element of "abcdefghij", which is a, which is a ```char```. And the result of sizeof('a') will be ```1``` since [[expr.sizeof](https://timsong-cpp.github.io/cppwp/n4659/expr.sizeof#1)] says:
 >... sizeof(char), sizeof(signed char) and sizeof(unsigned char) are 1 ...
+
+## Typeid of pointers and int[]
+Let's consider the following example:
+```cpp
+#include <iostream>
+#include <typeinfo>
+
+void takes_pointer(int* pointer) {
+  if (typeid(pointer) == typeid(int[])) std::cout << 'a';
+  if (typeid(pointer) == typeid(int*)) std::cout << 'p';
+}
+
+void takes_array(int array[]) {
+  if (typeid(array) == typeid(int[])) std::cout << 'a';
+  if (typeid(array) == typeid(int*)) std::cout << 'p';
+}
+
+int main() {
+  int* pointer = nullptr;
+  int array[1];
+
+  takes_pointer(array);
+  takes_array(pointer);
+
+  std::cout << (typeid(int*) == typeid(int[]));
+}
+```
+The program outputs ```pp0``` because functions taking pointers can also be called with arrays, and vice versa. But **arrays and pointers are not the same**.
+
+First let's look at ```takes_pointer(array);```. What happens here is usually referred to as **the array "decaying" to a pointer**. To be a bit more precise, let's have a look at [[conv.array](https://timsong-cpp.github.io/cppwp/n4659/conv.array)] in the C++ standard:
+>An lvalue or rvalue of type "array of N T" or "array of unknown bound of T" can be converted to a prvalue of type "pointer to T".
+
+```array``` is of type "array of 1 int", which converts to a prvalue (temporary) of type "pointer to int".
+So what happens with ```takes_array(pointer);```, does the pointer convert to an array? No, it's actually the other way around. Let's look at [[dcl.fct](https://timsong-cpp.github.io/cppwp/n4659/dcl.fct#5)] about function parameters:
+>After determining the type of each parameter, any parameter of type "array of T" (...) is adjusted to be "pointer to T"
+
+So in ```void takes_array(int array[])```, the type of array is **adjusted to be pointer to int**.
+
