@@ -1,5 +1,36 @@
 # CPP STL Containers
 
+## Using lambda as a custom comparator for a temporary std::set
+I've always wanted to create a custom std::set that gets filled in place from another container (a std::vector for instance) but the problem that I faced was that std::set custom comparator must be known at compile time, so it is not possible to use a lamda directly. Lately I found out a way to do it with a function object like the following:
+```cpp
+#include <iostream>
+#include <vector>
+#include <functional>
+#include <set>
+
+int main() {
+
+    std::vector<size_t> _vars(5);
+    for (int i = 0; i < 5; ++i) {
+        _vars.emplace_back(i);
+    }
+
+    // create a temporary set from the vector
+    std::set<size_t, std::function<bool (size_t , size_t)>> _myset (
+        _vars.begin(), _vars.end(),
+        [&](size_t l, size_t r) {
+            return l < r;
+        }
+    );
+
+    for (auto x : _myset) {
+        std::cout << x << std::endl;
+    }
+    return 0;
+}
+```
+The normal implementation would be to embed the set in a and use a custom struct comparator, but this methold is better since the labda can have access to the variables in the scope.
+
 ## Vector construction with one size_t parameter
 Lets consider the following example:
 ```cpp
