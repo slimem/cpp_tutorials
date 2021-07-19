@@ -399,3 +399,59 @@ So when looking for a declaration of f and finding Derived::f, the calculation i
 >"Otherwise (i.e., C does not contain a declaration of f or the resulting declaration set is empty), S(f,C) is initially empty. If C has base classes, calculate the lookup set >for f in each direct base class subobject Bi, and merge each such lookup set S(f, Bi) in turn into S(f, C).
 
 But since Derived does indeed contain a declaration of f, we never get around to looking at Base.
+
+## Call order of non-implicit constructer/copy constructor of an inherited class
+In the following example:
+```cpp
+#include <iostream>
+using namespace std;
+
+class A
+{
+public:
+    A() { cout << "A"; }
+    A(const A &) { cout << "a"; }
+};
+
+class B: public virtual A
+{
+public:
+    B() { cout << "B"; }
+    B(const B &) { cout<< "b"; }
+};
+
+class C: public virtual A
+{
+public:
+    C() { cout<< "C"; }
+    C(const C &) { cout << "c"; }
+};
+
+class D:B,C
+{
+public:
+    D() { cout<< "D"; }
+    D(const D &) { cout << "d"; }
+};
+
+int main()
+{
+    D d1;
+    D d2(d1);
+}
+```
+We get the following output: ```ABCDABCd```.
+### Order of constructor call
+Let's consider why first ```ABCD``` were displayed. At first, ```d1``` is initialized in the order A B C D. That order is defined by [[class.base.init](https://timsong-cpp.github.io/cppwp/n4659/class.base.init#13)]:
+
+> * First, and only for the constructor of the most derived class (§ 4.5), virtual base classes are initialized in the order they appear on a depth-first left-to-right traversal of the directed acyclic graph of base classes, where “left-to-right” is the order of appearance of the base classes in the derived class base-specifier-list.
+> * Then, direct base classes are initialized in declaration order as they appear in the base-specifier-list
+> (...)
+> * Finally, the compound-statement of the constructor body is executed.
+
+So the output is ABCD.
+### Order of copy-constructor call
+On the second line, ```d2``` is initialized. But it displays ABCd because an **implicitly-defined copy constructor would have called the copy constructor of its bases**  in [[class.copy.ctor](https://timsong-cpp.github.io/cppwp/n4659/class.copy.ctor#14)]:
+> The implicitly-defined copy/move constructor for a non-union class X performs a memberwise copy/move of its bases and members.
+
+But since we provide a user-defined copy constructor, the constructor of its bases were called instead, hence the output ABCd.
